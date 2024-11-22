@@ -5,6 +5,7 @@ import numpy as np
 
 st.set_page_config(page_title="Análisis de Ventas", layout="wide")
 st.title("Análisis de Ventas")
+
 st.sidebar.header("Cargar archivo de datos")
 
 uploaded_file = st.sidebar.file_uploader("Sube un archivo de ventas", type=["csv"])
@@ -49,19 +50,27 @@ if uploaded_file:
             ventas_por_periodo["Año"] = ventas_por_periodo["Periodo"].str[:4]
 
             plt.figure(figsize=(10, 6))
-            sns.lineplot(
-                data=ventas_por_periodo, 
-                x="Año", 
-                y="Unidades_vendidas", 
-                color=color_line, 
-                marker="o", 
-                label=row["Producto"]
+            # Línea principal
+            plt.plot(
+                ventas_por_periodo["Año"],
+                ventas_por_periodo["Unidades_vendidas"],
+                color=color_line,
+                marker="o",
+                label=row["Producto"],
+                linestyle="-"
             )
             
+            # Línea de tendencia
             if len(ventas_por_periodo) > 1:
                 z = np.polyfit(range(len(ventas_por_periodo)), ventas_por_periodo["Unidades_vendidas"], 1)
                 p = np.poly1d(z)
-                plt.plot(ventas_por_periodo["Año"], p(range(len(ventas_por_periodo))), linestyle="--", color="gray", label="Tendencia")
+                plt.plot(
+                    ventas_por_periodo["Año"],
+                    p(range(len(ventas_por_periodo))),
+                    linestyle="--",
+                    color="gray",
+                    label="Tendencia"
+                )
 
             plt.grid(True, linestyle="--", alpha=0.6)
             plt.xticks(rotation=0)
@@ -71,7 +80,6 @@ if uploaded_file:
             plt.legend()
             st.pyplot(plt)
 
-        
         st.markdown("---")
 
 else:
